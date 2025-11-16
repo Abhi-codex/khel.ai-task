@@ -5,8 +5,8 @@ body::-webkit-scrollbar {
 .main {
   position: relative;
   width: 100vw;
-  height: 100vh;        /* full viewport for globe */
-  background: #000;     /* pure black */
+  height: 100vh;        
+  background: #000;    
   overflow: hidden;
 }
 
@@ -19,11 +19,11 @@ body::-webkit-scrollbar {
   height: 50px;
   cursor: pointer;
   transition: transform 0.2s ease;
-  transform-origin: bottom center;   /* IMPORTANT */
+  transform-origin: bottom center;  
 }
 
 .pointer-icon:hover {
-  transform: scale(1.2);   /* grows upward only */
+  transform: scale(1.2);   
 }
 
 
@@ -97,17 +97,16 @@ body::-webkit-scrollbar {
   z-index: 5;
 }
 
-/* Left Button */
+
 .arrow-left {
-  left: -40px; /* slightly outside left */
-}
+  left: -40px; 
 
-/* Right Button */
+}
 .arrow-right {
-  right: -40px; /* slightly outside right */
+  right: -40px;
 }
 
-/* Hover effect */
+
 .arrow-btn:hover {
   background: white;
   color: black;
@@ -139,27 +138,27 @@ body::-webkit-scrollbar {
 
 .below-section {
   position: relative;
-  background: #000;     /* 👈 SAME BLACK */
+  background: #000;    
   padding: 120px 120px 160px;
   min-height: 60vh;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin-top: -40px;    /* thoda upar kheecho so it tucks under globe edge */
+  margin-top: -40px;   
 }
 
-/* soft fade between globe & text, like your example */
+
 .below-section::before {
   content: "";
   position: absolute;
-  top: -80px;           /* kitna globe ke andar jaaye */
+  top: -80px;           
   left: 0;
   right: 0;
-  height: 80px;         /* fade ki height */
+  height: 80px;         
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0),  /* top totally transparent (globe ke upar) */
-    #000000            /* end = same black */
+    rgba(0, 0, 0, 0),  
+    #000000            
   );
   pointer-events: none;
 }
@@ -193,12 +192,12 @@ body::-webkit-scrollbar {
 @keyframes riseUp {
  0% {
     opacity: 0;
-    clip-path: inset(100% 0 0 0); /* fully hidden from bottom */
-    transform: translateY(40px);  /* soft upward motion */
+    clip-path: inset(100% 0 0 0); 
+    transform: translateY(40px); 
   }
   100% {
     opacity: 1;
-    clip-path: inset(0 0 0 0); /* fully revealed */
+    clip-path: inset(0 0 0 0); 
     transform: translateY(0);
   }
 }

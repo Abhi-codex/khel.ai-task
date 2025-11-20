@@ -183,53 +183,125 @@ body::-webkit-scrollbar {
   animation: riseUp 1s ease-out forwards;
 }
 
-.below-text {
-  max-width: 640px;
-  color: #9ca3af;
-  font-size: 40px;
-  line-height: 1.6;
-  margin: 0;
-  opacity: 0;
-}
+/* ... Keep your existing Body, Main, and Pointer styles ... */
 
-.below-text.visible {
-  animation: riseUp2 2s ease-out forwards;
-}
+/* ... Scroll down to .below-section and REPLACE everything below it with this: ... */
 
-.heading {
+.below-section {
+  position: relative;
+  background: #000;    
+  padding: 80px 60px;
+  min-height: 50vh;
   display: flex;
-
-}
-.heading > img{
-  width: 50px;
-  height: 50px;
-  padding: 10px;
+  justify-content: center;
+  margin-top: -10px;   
+  z-index: 20;
 }
 
-/* Upward animation */
-@keyframes riseUp {
- 0% {
+/* Gradient Fade from Globe to Black Background */
+.below-section::before {
+  content: "";
+  position: absolute;
+  top: -100px;          
+  left: 0;
+  right: 0;
+  height: 100px;        
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #000000);
+  pointer-events: none;
+}
+
+.content-container {
+    max-width: 1400px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Aligns buttons with bottom of text */
+    gap: 60px;
+}
+
+/* Left Side Text Area */
+.text-content {
+    max-width: 850px;
+}
+
+.heading-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.sign-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.heading-label span {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: sans-serif;
+}
+
+.hero-text {
+    color: #fff;
+    font-size: 48px; /* Large text like the image */
+    line-height: 1.2;
+    font-weight: 500;
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    
+    /* Animation Setup */
     opacity: 0;
-    clip-path: inset(100% 0 0 0); 
-    transform: translateY(40px); 
-  }
-  100% {
-    opacity: 1;
-    clip-path: inset(0 0 0 0); 
-    transform: translateY(0);
-  }
+    transform: translateY(30px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
-@keyframes riseUp2 {
-   0% {
-    opacity: 0;
-    clip-path: inset(100% 0 0 0);
-    transform: translateY(60px);
-  }
-  100% {
+.hero-text.visible {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
     transform: translateY(0);
-  }
 }
 
+/* Right Side Navigation Buttons */
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 10px; /* Slight adjustment to align with text baseline */
+}
+
+.nav-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: white;
+    color: black;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .content-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .hero-text {
+        font-size: 36px;
+    }
+    
+    .nav-buttons {
+        margin-top: 30px;
+    }
+}

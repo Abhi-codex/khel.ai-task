@@ -18,7 +18,7 @@ extend({ ThreeGlobe: ThreeGlobe });
 
 const RING_PROPAGATION_SPEED = 3;
 const cameraZ = 300;
-const MAP_SIZE_FACTOR = 0.35; // Shrinks map to 50%
+const MAP_SIZE_FACTOR = 0.35; 
 
 export type Position = {
   order: number;
@@ -86,16 +86,16 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
-  // 1. Logic to shrink the map coordinates
+  
   useEffect(() => {
     if (!countries) return;
 
-    // Deep copy the countries data
+    
     const processedData = JSON.parse(JSON.stringify(countries));
 
-    // Recursive function to traverse nested arrays and scale coordinates
+   
     const scaleCoordinates = (coords: any) => {
-      // If we find a coordinate pair [lng, lat], scale it
+     
       if (
         Array.isArray(coords) &&
         coords.length === 2 &&
@@ -105,7 +105,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
         return [coords[0] * MAP_SIZE_FACTOR, coords[1] * MAP_SIZE_FACTOR];
       }
 
-      // If it's a deeper array (Polygon/MultiPolygon structure), recurse
+      
       if (Array.isArray(coords)) {
         return coords.map(scaleCoordinates);
       }
@@ -113,7 +113,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
       return coords;
     };
 
-    // Apply scaling to all features
+   
     processedData.features = processedData.features.map((feature: any) => {
       if (feature.geometry && feature.geometry.coordinates) {
         feature.geometry.coordinates = scaleCoordinates(
@@ -159,7 +159,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
   ]);
 
   useEffect(() => {
-    // Added modifiedCountries dependency
+    
     if (!globeRef.current || !isInitialized || !data || !modifiedCountries) return;
 
     const arcs = data;
@@ -171,15 +171,15 @@ export function Globe({ globeConfig, data }: WorldProps) {
         size: defaultProps.pointSize,
         order: arc.order,
         color: arc.color,
-        lat: arc.startLat * MAP_SIZE_FACTOR, // Scale points too
-        lng: arc.startLng * MAP_SIZE_FACTOR, // Scale points too
+        lat: arc.startLat * MAP_SIZE_FACTOR, 
+        lng: arc.startLng * MAP_SIZE_FACTOR,
       });
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
         color: arc.color,
-        lat: arc.endLat * MAP_SIZE_FACTOR, // Scale points too
-        lng: arc.endLng * MAP_SIZE_FACTOR, // Scale points too
+        lat: arc.endLat * MAP_SIZE_FACTOR, 
+        lng: arc.endLng * MAP_SIZE_FACTOR, 
       });
     }
 
@@ -193,7 +193,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     );
 
     globeRef.current
-      .hexPolygonsData(modifiedCountries.features) // Use modified data
+      .hexPolygonsData(modifiedCountries.features) 
       .hexPolygonResolution(4)
       .hexPolygonMargin(0)
       .showAtmosphere(defaultProps.showAtmosphere)
@@ -203,10 +203,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
     globeRef.current
       .arcsData(data)
-      .arcStartLat((d) => (d as { startLat: number }).startLat * MAP_SIZE_FACTOR) // Scale Arc start
-      .arcStartLng((d) => (d as { startLng: number }).startLng * MAP_SIZE_FACTOR) // Scale Arc start
-      .arcEndLat((d) => (d as { endLat: number }).endLat * MAP_SIZE_FACTOR) // Scale Arc end
-      .arcEndLng((d) => (d as { endLng: number }).endLng * MAP_SIZE_FACTOR) // Scale Arc end
+      .arcStartLat((d) => (d as { startLat: number }).startLat * MAP_SIZE_FACTOR)
+      .arcStartLng((d) => (d as { startLng: number }).startLng * MAP_SIZE_FACTOR) 
+      .arcEndLat((d) => (d as { endLat: number }).endLat * MAP_SIZE_FACTOR) 
+      .arcEndLng((d) => (d as { endLng: number }).endLng * MAP_SIZE_FACTOR) 
       .arcColor((e: any) => (e as { color: string }).color)
       .arcAltitude((e) => (e as { arcAlt: number }).arcAlt * 1)
       .arcStroke(() => [0.32, 0.28, 0.3][Math.round(Math.random() * 2)])
@@ -233,7 +233,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
   }, [
     isInitialized,
     data,
-    modifiedCountries, // Dependency added
+    modifiedCountries, 
     defaultProps.pointSize,
     defaultProps.showAtmosphere,
     defaultProps.atmosphereColor,
@@ -260,8 +260,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
       const ringsData = data
         .filter((d, i) => newNumbersOfRings.includes(i))
         .map((d) => ({
-          lat: d.startLat * MAP_SIZE_FACTOR, // Scale rings
-          lng: d.startLng * MAP_SIZE_FACTOR, // Scale rings
+          lat: d.startLat * MAP_SIZE_FACTOR, 
+          lng: d.startLng * MAP_SIZE_FACTOR, 
           color: d.color,
         }));
 
@@ -350,12 +350,12 @@ function hexToRgb(hex: string) {
     : null;
 }
 
-export function genRandomNumbers(min: number, max: number, count: number) {
-  const arr: number[] = [];
-  while (arr.length < count) {
-    const r = Math.floor(Math.random() * (max - min)) + min;
-    if (arr.indexOf(r) === -1) arr.push(r);
-  }
+// export function genRandomNumbers(min: number, max: number, count: number) {
+//   const arr: number[] = [];
+//   while (arr.length < count) {
+//     const r = Math.floor(Math.random() * (max - min)) + min;
+//     if (arr.indexOf(r) === -1) arr.push(r);
+//   }
 
-  return arr;
-}
+//   return arr;
+// }

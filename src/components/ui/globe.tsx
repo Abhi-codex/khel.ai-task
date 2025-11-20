@@ -130,7 +130,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     if (!globeRef.current && groupRef.current) {
       globeRef.current = new ThreeGlobe();
       (groupRef.current as any).add(globeRef.current);
-      globeRef.current.scale.set(4,5, 4,5, 4,5);
+      globeRef.current.scale.set(4.5, 4.5, 4.5);
       globeRef.current.position.set(0, 0, 0);
       setIsInitialized(true);
       groupRef.current.rotation.x = 6;
@@ -183,14 +183,14 @@ export function Globe({ globeConfig, data }: WorldProps) {
       });
     }
 
-    const filteredPoints = points.filter(
-      (v, i, a) =>
-        a.findIndex((v2) =>
-          ["lat", "lng"].every(
-            (k) => v2[k as "lat" | "lng"] === v[k as "lat" | "lng"]
-          )
-        ) === i
-    );
+    // const filteredPoints = points.filter(
+    //   (v, i, a) =>
+    //     a.findIndex((v2) =>
+    //       ["lat", "lng"].every(
+    //         (k) => v2[k as "lat" | "lng"] === v[k as "lat" | "lng"]
+    //       )
+    //     ) === i
+    // );
 
     globeRef.current
       .hexPolygonsData(modifiedCountries.features) 
@@ -350,12 +350,12 @@ function hexToRgb(hex: string) {
     : null;
 }
 
-// export function genRandomNumbers(min: number, max: number, count: number) {
-//   const arr: number[] = [];
-//   while (arr.length < count) {
-//     const r = Math.floor(Math.random() * (max - min)) + min;
-//     if (arr.indexOf(r) === -1) arr.push(r);
-//   }
+export function genRandomNumbers(min: number, max: number, count: number) {
+  const arr: number[] = [];
+  while (arr.length < count) {
+    const r = Math.floor(Math.random() * (max - min)) + min;
+    if (arr.indexOf(r) === -1) arr.push(r);
+  }
 
-//   return arr;
-// }
+  return arr;
+}

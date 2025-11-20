@@ -45,8 +45,8 @@ function App() {
   return (
     <div>
       <div className="main">
-        {/* --- FIXED POINTERS (Your Manual Setup) --- */}
-        <div style={{ position: "absolute", left: "29%", top: "28%", zIndex: 2 }} className="pointer-wrapper">
+       
+        <div style={{ position: "absolute", left: "29%", top: "30%", zIndex: 2 }} className="pointer-wrapper">
             <img src={point} alt="pointer" className="pointer-icon" />
             <div className="pointer-card">
                 <div className="pointer-image-wrapper">
@@ -61,7 +61,7 @@ function App() {
             </div>
         </div>
 
-        {/* Pointer 2 */}
+       
         <div style={{ position: "absolute", left: "60%", top: "30%", zIndex: 2 }} className="pointer-wrapper">
             <img src={point} alt="pointer" className="pointer-icon" />
             <div className="pointer-card">
@@ -77,7 +77,7 @@ function App() {
             </div>
         </div>
 
-        {/* Pointer 3 */}
+       
         <div style={{ position: "absolute", left: "50%", top: "35%", zIndex: 2 }} className="pointer-wrapper">
             <img src={point} alt="pointer" className="pointer-icon" />
             <div className="pointer-card">
@@ -93,7 +93,7 @@ function App() {
             </div>
         </div>
 
-         {/* Pointer 4 */}
+       
          <div style={{ position: "absolute", left: "32%", top: "50%", zIndex: 2 }} className="pointer-wrapper">
             <img src={point} alt="pointer" className="pointer-icon" />
             <div className="pointer-card">
@@ -109,7 +109,7 @@ function App() {
             </div>
         </div>
 
-         {/* Pointer 5 */}
+        
          <div style={{ position: "absolute", left: "70%", top: "40%", zIndex: 2 }} className="pointer-wrapper">
             <img src={point} alt="pointer" className="pointer-icon" />
             <div className="pointer-card">
@@ -130,10 +130,10 @@ function App() {
         </div>
       </div>
 
-      {/* --- BOTTOM SECTION (MATCHING YOUR IMAGE) --- */}
+      
       <div className="below-section">
         <div className="content-container">
-            {/* Left Side: Text */}
+          
             <div className="text-content">
                 <div className="heading-label">
                     <img src={sign} alt="" className="sign-icon" /> 
@@ -145,7 +145,7 @@ function App() {
                 </h2>
             </div>
 
-            {/* Right Side: Buttons */}
+            
             <div className="nav-buttons">
                 <button className="nav-btn">←</button>
                 <button className="nav-btn">→</button>

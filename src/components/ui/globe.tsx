@@ -17,7 +17,8 @@ declare module "@react-three/fiber" {
 extend({ ThreeGlobe: ThreeGlobe });
 
 const RING_PROPAGATION_SPEED = 3;
-const cameraZ = 200;
+const cameraZ = 300;
+const MAP_SIZE_FACTOR = 0.35; // Shrinks map to 50%
 
 export type Position = {
   order: number;
@@ -60,20 +61,21 @@ interface WorldProps {
   data: Position[];
 }
 
-let numbersOfRings = [0];
+
 
 export function Globe({ globeConfig, data }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null);
   const groupRef = useRef<THREE.Group | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [modifiedCountries, setModifiedCountries] = useState<any>(null);
 
   const defaultProps = {
     pointSize: 1,
     atmosphereColor: "#ffffff",
     showAtmosphere: true,
-    atmosphereAltitude: 0.1,
-    polygonColor: "rgba(255,255,255,0.7)",
-    globeColor: "#1d072e",
+    atmosphereAltitude: 0.15,
+    polygonColor: "rgb(68, 68, 68)",
+    globeColor: "#050505",
     emissive: "#000000",
     emissiveIntensity: 0.1,
     shininess: 0.9,
@@ -84,24 +86,60 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
-    useEffect(() => {
+  // 1. Logic to shrink the map coordinates
+  useEffect(() => {
+    if (!countries) return;
+
+    // Deep copy the countries data
+    const processedData = JSON.parse(JSON.stringify(countries));
+
+    // Recursive function to traverse nested arrays and scale coordinates
+    const scaleCoordinates = (coords: any) => {
+      // If we find a coordinate pair [lng, lat], scale it
+      if (
+        Array.isArray(coords) &&
+        coords.length === 2 &&
+        typeof coords[0] === "number" &&
+        typeof coords[1] === "number"
+      ) {
+        return [coords[0] * MAP_SIZE_FACTOR, coords[1] * MAP_SIZE_FACTOR];
+      }
+
+      // If it's a deeper array (Polygon/MultiPolygon structure), recurse
+      if (Array.isArray(coords)) {
+        return coords.map(scaleCoordinates);
+      }
+
+      return coords;
+    };
+
+    // Apply scaling to all features
+    processedData.features = processedData.features.map((feature: any) => {
+      if (feature.geometry && feature.geometry.coordinates) {
+        feature.geometry.coordinates = scaleCoordinates(
+          feature.geometry.coordinates
+        );
+      }
+      return feature;
+    });
+
+    setModifiedCountries(processedData);
+  }, []);
+
+  useEffect(() => {
     if (!globeRef.current && groupRef.current) {
       globeRef.current = new ThreeGlobe();
-
       (groupRef.current as any).add(globeRef.current);
-
-      globeRef.current.scale.set(1, 1, 1);
-
-      globeRef.current.position.set(0, -100, 0);
-
+      globeRef.current.scale.set(4,5, 4,5, 4,5);
+      globeRef.current.position.set(0, 0, 0);
       setIsInitialized(true);
+      groupRef.current.rotation.x = 6;
     }
   }, []);
 
-
   useEffect(() => {
     if (!globeRef.current || !isInitialized) return;
-
+   
     const globeMaterial = globeRef.current.globeMaterial() as unknown as {
       color: Color;
       emissive: Color;
@@ -121,26 +159,27 @@ export function Globe({ globeConfig, data }: WorldProps) {
   ]);
 
   useEffect(() => {
-    if (!globeRef.current || !isInitialized || !data) return;
+    // Added modifiedCountries dependency
+    if (!globeRef.current || !isInitialized || !data || !modifiedCountries) return;
 
     const arcs = data;
     let points: any[] = [];
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
-      const rgb = hexToRgb(arc.color) as { r: number; g: number; b: number };
+      
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
         color: arc.color,
-        lat: arc.startLat,
-        lng: arc.startLng,
+        lat: arc.startLat * MAP_SIZE_FACTOR, // Scale points too
+        lng: arc.startLng * MAP_SIZE_FACTOR, // Scale points too
       });
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
         color: arc.color,
-        lat: arc.endLat,
-        lng: arc.endLng,
+        lat: arc.endLat * MAP_SIZE_FACTOR, // Scale points too
+        lng: arc.endLng * MAP_SIZE_FACTOR, // Scale points too
       });
     }
 
@@ -148,15 +187,15 @@ export function Globe({ globeConfig, data }: WorldProps) {
       (v, i, a) =>
         a.findIndex((v2) =>
           ["lat", "lng"].every(
-            (k) => v2[k as "lat" | "lng"] === v[k as "lat" | "lng"],
-          ),
-        ) === i,
+            (k) => v2[k as "lat" | "lng"] === v[k as "lat" | "lng"]
+          )
+        ) === i
     );
 
     globeRef.current
-      .hexPolygonsData((countries as any).features)
+      .hexPolygonsData(modifiedCountries.features) // Use modified data
       .hexPolygonResolution(4)
-      .hexPolygonMargin(0.7)
+      .hexPolygonMargin(0)
       .showAtmosphere(defaultProps.showAtmosphere)
       .atmosphereColor(defaultProps.atmosphereColor)
       .atmosphereAltitude(defaultProps.atmosphereAltitude)
@@ -164,10 +203,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
     globeRef.current
       .arcsData(data)
-      .arcStartLat((d) => (d as { startLat: number }).startLat * 1)
-      .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
-      .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
-      .arcEndLng((d) => (d as { endLng: number }).endLng * 1)
+      .arcStartLat((d) => (d as { startLat: number }).startLat * MAP_SIZE_FACTOR) // Scale Arc start
+      .arcStartLng((d) => (d as { startLng: number }).startLng * MAP_SIZE_FACTOR) // Scale Arc start
+      .arcEndLat((d) => (d as { endLat: number }).endLat * MAP_SIZE_FACTOR) // Scale Arc end
+      .arcEndLng((d) => (d as { endLng: number }).endLng * MAP_SIZE_FACTOR) // Scale Arc end
       .arcColor((e: any) => (e as { color: string }).color)
       .arcAltitude((e) => (e as { arcAlt: number }).arcAlt * 1)
       .arcStroke(() => [0.32, 0.28, 0.3][Math.round(Math.random() * 2)])
@@ -176,12 +215,12 @@ export function Globe({ globeConfig, data }: WorldProps) {
       .arcDashGap(15)
       .arcDashAnimateTime(() => defaultProps.arcTime);
 
-    globeRef.current
-      .pointsData(filteredPoints)
-      .pointColor((e) => (e as { color: string }).color)
-      .pointsMerge(true)
-      .pointAltitude(0.0)
-      .pointRadius(0.2);
+    // globeRef.current
+    //   .pointsData(filteredPoints)
+    //   .pointColor(() => "#ff5500")
+    //   .pointsMerge(true)
+    //   .pointAltitude(0.05)
+    //   .pointRadius(0.7);
 
     globeRef.current
       .ringsData([])
@@ -189,11 +228,12 @@ export function Globe({ globeConfig, data }: WorldProps) {
       .ringMaxRadius(defaultProps.maxRings)
       .ringPropagationSpeed(RING_PROPAGATION_SPEED)
       .ringRepeatPeriod(
-        (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings,
+        (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings
       );
   }, [
     isInitialized,
     data,
+    modifiedCountries, // Dependency added
     defaultProps.pointSize,
     defaultProps.showAtmosphere,
     defaultProps.atmosphereColor,
@@ -214,14 +254,14 @@ export function Globe({ globeConfig, data }: WorldProps) {
       const newNumbersOfRings = genRandomNumbers(
         0,
         data.length,
-        Math.floor((data.length * 4) / 5),
+        Math.floor((data.length * 4) / 5)
       );
 
       const ringsData = data
         .filter((d, i) => newNumbersOfRings.includes(i))
         .map((d) => ({
-          lat: d.startLat,
-          lng: d.startLng,
+          lat: d.startLat * MAP_SIZE_FACTOR, // Scale rings
+          lng: d.startLng * MAP_SIZE_FACTOR, // Scale rings
           color: d.color,
         }));
 
@@ -253,15 +293,15 @@ export function World(props: WorldProps) {
   const scene = new Scene();
   scene.fog = new Fog(0xffffff, 400, 2000);
   return (
-     <Canvas
+    <Canvas
       scene={scene}
       camera={{
-        position: [0, 0, 0], 
+        position: [0, 0, 0],
         fov: 25,
         near: 40,
         far: 1800,
       }}
-     >
+    >
       <WebGLRendererConfig />
       <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
       <directionalLight
@@ -288,12 +328,13 @@ export function World(props: WorldProps) {
         autoRotate={false}
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI - Math.PI / 3}
+        target={[0, 80, 0]}
       />
     </Canvas>
   );
 }
 
-export function hexToRgb(hex: string) {
+function hexToRgb(hex: string) {
   var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function (m, r, g, b) {
     return r + r + g + g + b + b;

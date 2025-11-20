@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { World, type GlobeConfig, type Position } from "./components/ui/globe";
-import point from './assets/placeholder.png';
+import point from './assets/placeholder.avif';
 import image1 from './assets/images1.jpeg'
 import image2 from './assets/images2.jpeg'
 import image3 from './assets/images3.jpeg'
 import image4 from './assets/images4.jpeg'
 import image5 from './assets/images5.jpeg'
+import sign from './assets/sign.png'
 // function generateFixedPoints(): Position[] {
 //   const points: Position[] = [];
 //   let order = 0;
@@ -31,11 +32,13 @@ import image5 from './assets/images5.jpeg'
 // const positions: Position[] = generateFixedPoints();
 
 const positions: Position[] = [
-  { order: 0, startLat: 28.6139, startLng: 77.2090, endLat: 28.6139, endLng: 77.2090, arcAlt: 0.5, color: "#22c55e" },
+  { order: 0, startLat: 28.6139, startLng: 77.2090, endLat: 28.6139, endLng: 77.2090, arcAlt: 0, color: "#22c55e" },
 ];
 
+
+
 const globeConfig: GlobeConfig = {
-  pointSize: 3,
+  pointSize: 1,
   globeColor: "#212121",
   showAtmosphere: true,
   atmosphereColor: "#c6c6c6ff",
@@ -43,8 +46,8 @@ const globeConfig: GlobeConfig = {
   emissive: "#212121",
   emissiveIntensity: 0.5,
   shininess: 0.5,
-  polygonColor: "rgba(255, 255, 255, 0.95)",
-  pointLight: "#e21010",
+  polygonColor: "rgb(171,171,171)",
+  // pointLight: "#d26565ff",
   arcTime: 2000,
   arcLength: 0.5,
   rings: 1,
@@ -231,20 +234,24 @@ function App() {
       <World globeConfig={globeConfig} data={positions}/>
       </div>
 </div>
-      <section className="below-section">
-        <h1
+<div className="below-section">
+      <section className="heading">
+      <img src={sign} alt="" className="sign" />  <h1
           ref={headingRef}
           className={`rise-heading ${headingVisible ? "visible" : ""}`}
         >
-          Khel.ai
+          Ecosystem
         </h1>
+        </section>
+        <section className="belowText">
         <p className={`below-text ${headingVisible ? "visible" : ""}`}>
-          We bridge sports, gaming, and
-lifestyle by transforming collectibles
-into dynamic, cross-platform
-assets across mobile aames
+          We bridge sports, gaming, and lifestyle by
+transforming collectibles into dynamic,
+cross-platform assets across mobile games
         </p>
-      </section>
+        </section>
+      
+      </div>
     </div>
   );
 }

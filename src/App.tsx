@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { World, type GlobeConfig, type Position } from "./components/ui/globe";
-import point from './assets/placeholder.avif';
+import point from './assets/placeholder.png';
 import image1 from './assets/images1.jpeg'
 import image2 from './assets/images2.jpeg'
 import image3 from './assets/images3.jpeg'

@@ -6,6 +6,7 @@ import { useThree, Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import countries from "../../data/globe.json";
 
+
 declare module "@react-three/fiber" {
   interface ThreeElements {
     threeGlobe: ThreeElements["mesh"] & {
@@ -62,6 +63,22 @@ interface WorldProps {
 }
 
 
+///calculating point position
+function latLngToVector3(lat: number, lng: number) {
+  
+  const radius = 100; 
+  const scale = 0.35; // MAP_SIZE_FACTOR
+
+  const latRad = (lat * scale) * (Math.PI / 180);
+  const lngRad = ((lng * scale) - 180) * (Math.PI / 180);
+
+  const x = -(radius * Math.cos(latRad) * Math.cos(lngRad));
+  const z = (radius * Math.cos(latRad) * Math.sin(lngRad));
+  const y = (radius * Math.sin(latRad));
+
+  return new Vector3(x, y, z);
+}
+
 
 export function Globe({ globeConfig, data }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null);
@@ -86,7 +103,52 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
-  
+  function MarkerUpdater({ data, groupRef }: { data: any[], groupRef: any }) {
+  const { camera, size } = useThree();
+  const tempV = new Vector3();
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+
+    data.forEach((d, i) => {
+      // 1. Find the HTML div by ID (We will set this ID in App.tsx later)
+      const el = document.getElementById(`marker-${i}`);
+      if (!el) return;
+
+      // 2. Calculate 3D position
+      const localPos = latLngToVector3(d.startLat, d.startLng);
+      
+      // 3. Adjust for the Globe's rotation/scale
+      tempV.copy(localPos);
+      tempV.applyMatrix4(groupRef.current.matrixWorld);
+
+      // 4. Project 3D world coordinates to 2D screen coordinates
+      // .project returns x/y between -1 and +1
+      tempV.project(camera);
+
+      // 5. Convert to pixels
+      const x = (tempV.x * .5 + .5) * size.width;
+      const y = (tempV.y * -.5 + .5) * size.height;
+
+      // 6. Apply to CSS
+      el.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+      el.style.display = 'block';
+
+      // 7. Simple Occlusion: Hide if it's behind the earth
+      // (If z > 1, it is behind the camera's view plane)
+      if (tempV.z > 1) {
+         el.style.opacity = '0';
+         el.style.pointerEvents = 'none';
+      } else {
+         el.style.opacity = '1';
+         el.style.pointerEvents = 'auto';
+      }
+    });
+  });
+
+  return null;
+}
+
   useEffect(() => {
     if (!countries) return;
 
